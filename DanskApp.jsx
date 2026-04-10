@@ -1,7 +1,7 @@
 const { useState, useEffect, useRef } = React;
 
-// AIzaSyBCyhPMUX1vly-Hob_Q0LehPa0aVXM6jE4
-const API_KEY = "AIzaSyBCyhPMUX1vly-Hob_Q0LehPa0aVXM6jE4"; 
+// AIzaSyAWjyD7LuK5KBhEi7y03HIbjYg2EjL6F50
+const API_KEY = "AIzaSyAWjyD7LuK5KBhEi7y03HIbjYg2EjL6F50"; 
 
 const topics = {
   A: { label: "A: Arbejde", person: "Nanna er kok", cards: [
@@ -15,10 +15,10 @@ const topics = {
   B: { label: "B: Fritid", person: "Jonas går til fodbold", cards: [
     { id:"sted", label:"Sted/by", scene:"Jonas spiller fodbold i en by i Danmark.", wh:["Hvor"] },
     { id:"klub", label:"Klub", scene:"Jonas er med i en fodboldklub.", wh:["Hvilken"] },
-    { id:"dage", label:"Dage", scene:"Jonas spiller fodbold på bestemte dage.", wh:["Hvornår"] },
+    { id:"dage", label:"Dage", scene:"Jonas spiller fodbold на bestemte dage.", wh:["Hvornår"] },
     { id:"sam", label:"Sammen med", scene:"Jonas spiller fodbold med andre spillere.", wh:["Hvem"] },
     { id:"pris", label:"Pris", scene:"Det koster penge at spille i klubben.", wh:["Hvad"] },
-    { id:"trans", label:"Transport", scene:"Jonas kommer til træning på en bestemt måde.", wh:["Hvordan"] }
+    { id:"trans", label:"Transport", scene:"Jonas kommer til træning на en bestemt måde.", wh:["Hvordan"] }
   ]},
   C: { label: "C: Bolig", person: "John og Emma bor i et hus", cards: [
     { id:"by", label:"By", scene:"John og Emma bor i en by i Danmark.", wh:["Hvilken","Hvor"] },
@@ -30,7 +30,7 @@ const topics = {
   ]},
   D: { label: "D: Skole", person: "Karla går i skole", cards: [
     { id:"sted", label:"Sted/by", scene:"Karla går i skole i en by.", wh:["Hvor","Hvilken"] },
-    { id:"tid", label:"Dage/tid", scene:"Karla møder i skole på bestemte tider.", wh:["Hvornår"] },
+    { id:"tid", label:"Dage/tid", scene:"Karla møder i skole на bestemte tider.", wh:["Hvornår"] },
     { id:"elev", label:"Elever", scene:"Der er mange elever i klassen.", wh:["Hvor mange"] },
     { id:"laer", label:"Lærer", scene:"Karla har en god lærer.", wh:["Hvem","Hvad"] },
     { id:"pause", label:"Pauser", scene:"Eleverne har pauser.", wh:["Hvornår"] },
@@ -84,82 +84,10 @@ function DanskApp() {
     Tema: ${c.label}
     Elevens spørgsmål: "${text}"
     Tjek om spørgsmålet er korrekt dansk, om der er korrekt inversion (ordstilling), og om det passer til situationen. 
-    Svar kort på dansk. Hvis der er fejl, så forklar hvorfor og giv den korrekte version.`;
+    Svar kort на dansk. Hvis der er fejl, så forklar hvorfor og giv den korrekte version.`;
 
-  try {
+    try {
       const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        setFeedback({ score: "fejl", simple: `Помилка API: ${errorData.error.message}` });
-        setLoading(false);
-        return;
-      }
-
-      const data = await response.json();
-      if (data.candidates && data.candidates[0]) {
-        const aiText = data.candidates[0].content.parts[0].text;
-        setFeedback({ score: "god", simple: aiText });
-      } else {
-        setFeedback({ score: "fejl", simple: "ШІ не зміг сформувати відповідь." });
-      }
-    } catch (e) {
-      setFeedback({ score: "fejl", simple: "Помилка мережі. Перевірте API ключ або інтернет." });
-    }
-
-  return (
-    <div className="max-w-md mx-auto p-4 font-sans bg-gray-50 min-h-screen">
-      <h1 className="text-xl font-bold mb-4 text-center text-blue-600">🇩🇰 Dansk AI Træner</h1>
-      
-      <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
-        {Object.keys(topics).map(k => (
-          <button key={k} onClick={() => {setCurT(k); setCurC(0); setFeedback(null);}} 
-            className={`px-4 py-2 rounded-full border whitespace-nowrap transition-all ${curT === k ? 'bg-blue-500 text-white shadow-md' : 'bg-white text-gray-700'}`}>
-            {topics[k].label}
-          </button>
-        ))}
-      </div>
-
-      <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
-        <div className="text-sm text-gray-500 mb-2 uppercase font-semibold">{t.person}</div>
-        <div className="text-lg font-bold text-gray-800 mb-4">{c.label}</div>
-        
-        <div className="bg-blue-50 p-4 rounded-xl mb-6 italic text-gray-700 border-l-4 border-blue-400">
-          "{c.scene}"
-        </div>
-
-        <textarea 
-          className="w-full h-24 p-4 border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-blue-400"
-          value={inputs[key] || ""} 
-          onChange={e => setInputs({...inputs, [key]: e.target.value})}
-          placeholder="Skriv dit spørgsmål..."
-        />
-
-        <button onClick={checkWithAI} disabled={loading}
-          className={`w-full mt-4 py-3 rounded-xl font-bold text-white transition-all ${loading ? 'bg-gray-400' : 'bg-green-500 hover:bg-green-600'}`}>
-          {loading ? "Tænker..." : "Tjek med AI 🤖"}
-        </button>
-
-        {feedback && (
-          <div className={`mt-4 p-4 rounded-xl border ${feedback.score === 'load' ? 'bg-gray-100' : 'bg-green-50 border-green-200 text-green-800'}`}>
-            <div className="text-sm leading-relaxed whitespace-pre-wrap">{feedback.simple}</div>
-          </div>
-        )}
-
-        <div className="flex justify-between mt-6 gap-4">
-          <button onClick={() => {setCurC(Math.max(0, curC - 1)); setFeedback(null);}} disabled={curC === 0}
-            className="flex-1 px-4 py-3 bg-gray-200 rounded-xl font-semibold disabled:opacity-50">Назад</button>
-          <button onClick={() => {setCurC(Math.min(t.cards.length - 1, curC + 1)); setFeedback(null);}}
-            className="flex-1 px-4 py-3 bg-blue-500 text-white rounded-xl font-semibold">Далі</button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(<DanskApp />);
+        body: JSON.stringify({ contents: [{
