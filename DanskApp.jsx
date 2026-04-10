@@ -1,8 +1,6 @@
 const { useState, useEffect } = React;
-
-// РОЗДІЛІТЬ ВАШ НОВИЙ КЛЮЧ ТУТ:
-const part1 = "AIzaSyC3Qh"; // перша частина ключа
-const part2 = "K8LAl0kAV2BZ4uThQNcN5micc3KPg";    // 
+const part1 = "AIzaSyC3Qh"; 
+const part2 = "K8LAl0kAV2BZ4uThQNcN5micc3KPg"; 
 const API_KEY = part1 + part2;
 
 const topics = {
