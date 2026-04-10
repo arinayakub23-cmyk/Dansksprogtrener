@@ -1,6 +1,7 @@
 const { useState, useEffect } = React;
-const part1 = "AIzaSyC3Qh"; 
-const part2 = "K8LAl0kAV2BZ4uThQNcN5micc3KPg"; 
+
+const part1 = "AIzaSyC3Qh";
+const part2 = "K8LAl0kAV2BZ4uThQNcN5micc3KPg";
 const API_KEY = part1 + part2;
 
 const topics = {
@@ -18,7 +19,7 @@ const topics = {
     { id:"dage", label:"Dage", scene:"Jonas spiller fodbold på bestemte dage.", wh:["Hvornår"] },
     { id:"sam", label:"Sammen med", scene:"Jonas spiller fodbold med andre spillere.", wh:["Hvem"] },
     { id:"pris", label:"Pris", scene:"Det koster penge at spille i klubben.", wh:["Hvad"] },
-    { id:"trans", label:"Transport", scene:"Jonas kommer til træning på en bestemt måde.", wh:["Hvordan"] }
+    { id:"trans", label:"Transport", scene:"Jonas kommer til træning на en bestemt måde.", wh:["Hvordan"] }
   ]},
   C: { label: "C: Bolig", person: "John og Emma bor i et hus", cards: [
     { id:"by", label:"By", scene:"John og Emma bor i en by i Danmark.", wh:["Hvilken","Hvor"] },
@@ -87,7 +88,8 @@ function DanskApp() {
     Svar kort на dansk. Hvis der er fejl, så forklar hvorfor og giv den korrekte version.`;
 
     try {
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
+      // ОНОВЛЕНО: Використовуємо стабільну версію v1 та повну назву моделі
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
