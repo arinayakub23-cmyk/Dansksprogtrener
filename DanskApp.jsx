@@ -86,20 +86,30 @@ function DanskApp() {
     Tjek om spørgsmålet er korrekt dansk, om der er korrekt inversion (ordstilling), og om det passer til situationen. 
     Svar kort på dansk. Hvis der er fejl, så forklar hvorfor og giv den korrekte version.`;
 
-    try {
+  try {
       const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
       });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        setFeedback({ score: "fejl", simple: `Помилка API: ${errorData.error.message}` });
+        setLoading(false);
+        return;
+      }
+
       const data = await response.json();
-      const aiText = data.candidates[0].content.parts[0].text;
-      setFeedback({ score: "god", simple: aiText });
+      if (data.candidates && data.candidates[0]) {
+        const aiText = data.candidates[0].content.parts[0].text;
+        setFeedback({ score: "god", simple: aiText });
+      } else {
+        setFeedback({ score: "fejl", simple: "ШІ не зміг сформувати відповідь." });
+      }
     } catch (e) {
-      setFeedback({ score: "fejl", simple: "Kunne ikke forbinde til AI. Tjek din internetforbindelse." });
+      setFeedback({ score: "fejl", simple: "Помилка мережі. Перевірте API ключ або інтернет." });
     }
-    setLoading(false);
-  };
 
   return (
     <div className="max-w-md mx-auto p-4 font-sans bg-gray-50 min-h-screen">
