@@ -1,7 +1,7 @@
 const { useState, useEffect } = React;
 
-const part1 = "AIzaSyBw27";
-const part2 = "4-JqBlFcRWdbIGKwTvIlzjOAx4xaY";
+const part1 = "AIzaSyDeCk";
+const part2 = "3Eb7szpD1rrJrW6VBI2AVDo4W6sf0";
 const API_KEY = part1 + part2;
 
 const topics = {
@@ -32,10 +32,10 @@ const topics = {
   D: { label: "D: Skole", person: "Karla går i skole", cards: [
     { id:"sted", label:"Sted/by", scene:"Karla går i skole i en by.", wh:["Hvor","Hvilken"] },
     { id:"tid", label:"Dage/tid", scene:"Karla møder i skole на bestemte tider.", wh:["Hvornår"] },
-    { id:"elev", label:"Elever", scene:"Der er many elever i klassen.", wh:["Hvor mange"] },
+    { id:"elev", label:"Elever", scene:"Der er mange elever i klassen.", wh:["Hvor mange"] },
     { id:"laer", label:"Lærer", scene:"Karla har en god lærer.", wh:["Hvem","Hvad"] },
     { id:"pause", label:"Pauser", scene:"Eleverne har pauser.", wh:["Hvornår"] },
-    { id:"trans", label:"Transport", scene:"Karla bruger transport til skole.", wh:["Hvordan"] }
+    { id:"trans", label:"Transport", scene:"Karla bruger transport до школи.", wh:["Hvordan"] }
   ]},
   E: { label: "E: Praktik", person: "Layla er i praktik", cards: [
     { id:"sted", label:"Sted/by", scene:"Layla er i praktik et sted i Danmark.", wh:["Hvor"] },
@@ -84,15 +84,19 @@ function DanskApp() {
     Situation: ${c.scene}
     Tema: ${c.label}
     Elevens spørgsmål: "${text}"
-    Tjek om spørgsmålet er korrekt dansk, om der er korrekt inversion (ordstilling), og om det passer til situationen. 
+    Tjek om spørgsmål er korrekt dansk, om der er korrekt inversion, og om det passer til situationen. 
     Svar kort на dansk. Hvis der er fejl, så forklar hvorfor og giv den korrekte version.`;
 
     try {
-      // ЗМІНЕНО: Використовуємо v1 замість v1beta
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
+      // КРИТИЧНЕ ВИПРАВЛЕННЯ: Повний URL для Gemini 1.5 Flash
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+      
+      const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }]
+        })
       });
 
       if (!response.ok) {
@@ -100,13 +104,14 @@ function DanskApp() {
         setFeedback({ score: "fejl", simple: `Помилка API: ${errorData.error.message}` });
       } else {
         const data = await response.json();
-        if (data.candidates && data.candidates[0]) {
-          const aiText = data.candidates[0].content.parts[0].text;
-          setFeedback({ score: "god", simple: aiText });
+        if (data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
+          setFeedback({ score: "god", simple: data.candidates[0].content.parts[0].text });
+        } else {
+          setFeedback({ score: "fejl", simple: "ШІ не зміг сформувати відповідь." });
         }
       }
     } catch (e) {
-      setFeedback({ score: "fejl", simple: "Помилка мережі. Перевірте інтернет." });
+      setFeedback({ score: "fejl", simple: "Помилка мережі. Перевірте ключ або інтернет." });
     }
     setLoading(false);
   };
