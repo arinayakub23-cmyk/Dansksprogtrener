@@ -1,9 +1,4 @@
-useEffect(() => {
-    if (window.Telegram?.WebApp) {
-      window.Telegram.WebApp.ready();
-      window.Telegram.WebApp.expand();
-    }
-  }, []);import { useState, useRef } from "react";
+);import { useState, useRef } from "react";
 const topics = {
 A: { icon: " ", label: "A: Arbejde", person: "Nanna er kok", cards: [
 { id:"by", label:"By", scene:"Nanna arbejder i en by i Danmark.", wh:["Hvor","Hvilken"],
@@ -263,4 +258,9 @@ fontSize: 14, fontWeight: 500,
 <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
 </div>
 }
-);
+);useEffect(() => {
+    if (window.Telegram?.WebApp) {
+      window.Telegram.WebApp.ready();
+      window.Telegram.WebApp.expand();
+    }
+  }, 
