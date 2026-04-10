@@ -1,7 +1,7 @@
 const { useState, useEffect } = React;
 
-const part1 = "AIzaSyCWCy";
-const part2 = "fQ5cap3kjArUeI-PUBSZ4V3FiwVnc";
+const part1 = "AIzaSyAfiS"; 
+const part2 = "8SsIz8L2UJ75XQwnnH-vEqtwlEqOA";
 const API_KEY = part1 + part2;
 
 const topics = {
@@ -102,3 +102,40 @@ function DanskApp() {
 
       <div className="bg-white p-6 rounded-2xl shadow-lg border">
         <div className="text-sm text-gray-400 mb-1 uppercase font-bold tracking-tight">{t.person}</div>
+        <div className="text-lg font-bold text-gray-800 mb-4">{c.label}</div>
+        
+        <div className="bg-blue-50 p-4 rounded-xl mb-6 italic text-gray-700 border-l-4 border-blue-400">
+          "{c.scene}"
+        </div>
+
+        <textarea 
+          className="w-full h-24 p-4 border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-blue-400"
+          value={inputs[key] || ""} 
+          onChange={e => setInputs({...inputs, [key]: e.target.value})}
+          placeholder="Skriv dit spørgsmål her..."
+        />
+
+        <button onClick={checkWithAI} disabled={loading}
+          className={`w-full mt-4 py-3 rounded-xl font-bold text-white shadow-md active:scale-95 transition-all ${loading ? 'bg-gray-400' : 'bg-green-500 hover:bg-green-600'}`}>
+          {loading ? "Tænker..." : "Tjek med AI 🤖"}
+        </button>
+
+        {feedback && (
+          <div className={`mt-4 p-4 rounded-xl border ${feedback.score === 'fejl' ? 'bg-red-50 border-red-100 text-red-700' : 'bg-green-50 border-green-100 text-green-800'}`}>
+            <div className="text-sm leading-relaxed whitespace-pre-wrap font-medium">{feedback.simple}</div>
+          </div>
+        )}
+
+        <div className="flex justify-between mt-6 gap-4">
+          <button onClick={() => {setCurC(Math.max(0, curC - 1)); setFeedback(null);}} disabled={curC === 0}
+            className="flex-1 px-4 py-3 bg-gray-200 rounded-xl font-semibold disabled:opacity-50">Назад</button>
+          <button onClick={() => {setCurC(Math.min(t.cards.length - 1, curC + 1)); setFeedback(null);}}
+            className="flex-1 px-4 py-3 bg-blue-500 text-white rounded-xl font-semibold shadow-md">Далі</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<DanskApp />);
