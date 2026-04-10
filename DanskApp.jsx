@@ -1,7 +1,7 @@
 const { useState, useEffect } = React;
 
-const part1 = "AIzaSyC3Qh";
-const part2 = "K8LAl0kAV2BZ4uThQNcN5micc3KPg";
+const part1 = "AIzaSyBw27";
+const part2 = "4-JqBlFcRWdbIGKwTvIlzjOAx4xaY";
 const API_KEY = part1 + part2;
 
 const topics = {
@@ -16,7 +16,7 @@ const topics = {
   B: { label: "B: Fritid", person: "Jonas går til fodbold", cards: [
     { id:"sted", label:"Sted/by", scene:"Jonas spiller fodbold i en by i Danmark.", wh:["Hvor"] },
     { id:"klub", label:"Klub", scene:"Jonas er med i en fodboldklub.", wh:["Hvilken"] },
-    { id:"dage", label:"Dage", scene:"Jonas spiller fodbold på bestemte dage.", wh:["Hvornår"] },
+    { id:"dage", label:"Dage", scene:"Jonas spiller fodbold на bestemte dage.", wh:["Hvornår"] },
     { id:"sam", label:"Sammen med", scene:"Jonas spiller fodbold med andre spillere.", wh:["Hvem"] },
     { id:"pris", label:"Pris", scene:"Det koster penge at spille i klubben.", wh:["Hvad"] },
     { id:"trans", label:"Transport", scene:"Jonas kommer til træning на en bestemt måde.", wh:["Hvordan"] }
@@ -32,10 +32,10 @@ const topics = {
   D: { label: "D: Skole", person: "Karla går i skole", cards: [
     { id:"sted", label:"Sted/by", scene:"Karla går i skole i en by.", wh:["Hvor","Hvilken"] },
     { id:"tid", label:"Dage/tid", scene:"Karla møder i skole на bestemte tider.", wh:["Hvornår"] },
-    { id:"elev", label:"Elever", scene:"Der er mange elever i klassen.", wh:["Hvor mange"] },
+    { id:"elev", label:"Elever", scene:"Der er many elever i klassen.", wh:["Hvor mange"] },
     { id:"laer", label:"Lærer", scene:"Karla har en god lærer.", wh:["Hvem","Hvad"] },
     { id:"pause", label:"Pauser", scene:"Eleverne har pauser.", wh:["Hvornår"] },
-    { id:"trans", label:"Transport", scene:"Karla bruger transport до школи.", wh:["Hvordan"] }
+    { id:"trans", label:"Transport", scene:"Karla bruger transport til skole.", wh:["Hvordan"] }
   ]},
   E: { label: "E: Praktik", person: "Layla er i praktik", cards: [
     { id:"sted", label:"Sted/by", scene:"Layla er i praktik et sted i Danmark.", wh:["Hvor"] },
@@ -88,7 +88,7 @@ function DanskApp() {
     Svar kort на dansk. Hvis der er fejl, så forklar hvorfor og giv den korrekte version.`;
 
     try {
-      // ОНОВЛЕНО: Використовуємо стабільну версію v1 та повну назву моделі
+      // ЗМІНЕНО: Використовуємо v1 замість v1beta
       const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -106,7 +106,7 @@ function DanskApp() {
         }
       }
     } catch (e) {
-      setFeedback({ score: "fejl", simple: "Помилка мережі. Перевірте з'єднання." });
+      setFeedback({ score: "fejl", simple: "Помилка мережі. Перевірте інтернет." });
     }
     setLoading(false);
   };
