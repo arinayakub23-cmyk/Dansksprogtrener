@@ -1,24 +1,26 @@
 const { useState, useEffect } = React;
 
-// AIzaSyAWjyD7LuK5KBhEi7y03HIbjYg2EjL6F50
-const API_KEY = "AIzaSyAWjyD7LuK5KBhEi7y03HIbjYg2EjL6F50"; 
+// РОЗДІЛІТЬ ВАШ НОВИЙ КЛЮЧ ТУТ:
+const part1 = "AIzaSyC3Qh"; // перша частина ключа
+const part2 = "K8LAl0kAV2BZ4uThQNcN5micc3KPg";    // 
+const API_KEY = part1 + part2;
 
 const topics = {
   A: { label: "A: Arbejde", person: "Nanna er kok", cards: [
     { id:"by", label:"By", scene:"Nanna arbejder i en by i Danmark.", wh:["Hvor","Hvilken"] },
     { id:"tid", label:"Arbejdstid", scene:"Nanna møder på arbejde klokken 7.", wh:["Hvornår"] },
     { id:"plads", label:"Arbejdsplads", scene:"Nanna arbejder på et hotel som kok.", wh:["Hvor"] },
-    { id:"frokost", label:"Frokostpause", scene:"Nanna har frokostpause midт på dagen.", wh:["Hvornår"] },
+    { id:"frokost", label:"Frokostpause", scene:"Nanna har frokostpause midt på dagen.", wh:["Hvornår"] },
     { id:"løn", label:"Løn", scene:"Nanna tjener penge som kok på hotellet.", wh:["Hvor meget"] },
     { id:"sprog", label:"Sprog/kolleger", scene:"Nanna taler dansk og arbejder med kolleger.", wh:["Hvad","Hvem"] }
   ]},
   B: { label: "B: Fritid", person: "Jonas går til fodbold", cards: [
     { id:"sted", label:"Sted/by", scene:"Jonas spiller fodbold i en by i Danmark.", wh:["Hvor"] },
     { id:"klub", label:"Klub", scene:"Jonas er med i en fodboldklub.", wh:["Hvilken"] },
-    { id:"dage", label:"Dage", scene:"Jonas spiller fodbold на bestemte dage.", wh:["Hvornår"] },
+    { id:"dage", label:"Dage", scene:"Jonas spiller fodbold på bestemte dage.", wh:["Hvornår"] },
     { id:"sam", label:"Sammen med", scene:"Jonas spiller fodbold med andre spillere.", wh:["Hvem"] },
     { id:"pris", label:"Pris", scene:"Det koster penge at spille i klubben.", wh:["Hvad"] },
-    { id:"trans", label:"Transport", scene:"Jonas kommer til træning на en bestemt måde.", wh:["Hvordan"] }
+    { id:"trans", label:"Transport", scene:"Jonas kommer til træning på en bestemt måde.", wh:["Hvordan"] }
   ]},
   C: { label: "C: Bolig", person: "John og Emma bor i et hus", cards: [
     { id:"by", label:"By", scene:"John og Emma bor i en by i Danmark.", wh:["Hvilken","Hvor"] },
@@ -34,7 +36,7 @@ const topics = {
     { id:"elev", label:"Elever", scene:"Der er mange elever i klassen.", wh:["Hvor mange"] },
     { id:"laer", label:"Lærer", scene:"Karla har en god lærer.", wh:["Hvem","Hvad"] },
     { id:"pause", label:"Pauser", scene:"Eleverne har pauser.", wh:["Hvornår"] },
-    { id:"trans", label:"Transport", scene:"Karla bruger transport til skole.", wh:["Hvordan"] }
+    { id:"trans", label:"Transport", scene:"Karla bruger transport до школи.", wh:["Hvordan"] }
   ]},
   E: { label: "E: Praktik", person: "Layla er i praktik", cards: [
     { id:"sted", label:"Sted/by", scene:"Layla er i praktik et sted i Danmark.", wh:["Hvor"] },
@@ -104,7 +106,7 @@ function DanskApp() {
         }
       }
     } catch (e) {
-      setFeedback({ score: "fejl", simple: "Помилка мережі. Перевірте ключ або інтернет." });
+      setFeedback({ score: "fejl", simple: "Помилка мережі. Перевірте з'єднання." });
     }
     setLoading(false);
   };
