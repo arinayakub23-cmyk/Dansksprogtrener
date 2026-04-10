@@ -1,7 +1,7 @@
 const { useState, useEffect } = React;
 
-// Вставте сюди свій новий API Key, якщо старий заблоковано
-const API_KEY = "AIzaSyBCyhPMUX1vly-Hob_Q0LehPa0aVXM6jE4"; 
+// AIzaSyAWjyD7LuK5KBhEi7y03HIbjYg2EjL6F50
+const API_KEY = "AIzaSyAWjyD7LuK5KBhEi7y03HIbjYg2EjL6F50"; 
 
 const topics = {
   A: { label: "A: Arbejde", person: "Nanna er kok", cards: [
