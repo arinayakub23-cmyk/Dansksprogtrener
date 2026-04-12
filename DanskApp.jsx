@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 
-// ВІДНОВЛЕНІ ДАНІ (Теми A-F)
 const topics = {
   A: { label: "A: Arbejde", person: "Nanna er kok", cards: [{ id:"by", label:"By", scene:"Nanna arbejder i en by i Danmark.", wh:["Hvor"] }] },
   B: { label: "B: Fritid", person: "Jonas går til fodbold", cards: [{ id:"sted", label:"Sted", scene:"Jonas spiller fodbold.", wh:["Hvor"] }] },
@@ -17,12 +16,10 @@ export default function App() {
   const [feedback, setFeedback] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // ЦЕЙ БЛОК ОЖИВЛЯЄ КЛЮЧ З VERCEL
   const [apiKey, setApiKey] = useState("");
 
   useEffect(() => {
-    // Намагаємося дістати ключ з оточення Vercel
-    // Якщо його немає, apiKey залишиться порожнім, але сайт НЕ впаде
+   
     try {
       const key = process.env.REACT_APP_GEMINI_KEY || window._env_?.REACT_APP_GEMINI_KEY;
       if (key) setApiKey(key);
