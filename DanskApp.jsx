@@ -1,8 +1,8 @@
 const { useState, useEffect } = React;
 
-const part1 = "AIzaSyAfiS"; 
-const part2 = "8SsIz8L2UJ75XQwnnH-vEqtwlEqOA";
-const API_KEY = part1 + part2;
+// БЕЗПЕКА: Ключ тепер береться зі змінних оточення Vercel
+// Переконайся, що у Vercel додана змінна REACT_APP_GEMINI_KEY
+const API_KEY = process.env.REACT_APP_GEMINI_KEY;
 
 const topics = {
   A: { label: "A: Arbejde", person: "Nanna er kok", cards: [
@@ -27,6 +27,12 @@ const topics = {
     { id:"rum", label:"Værelser", scene:"Huset har flere rum.", wh:["Hvor mange"] },
     { id:"have", label:"Have", scene:"Huset har en have.", wh:["Hvor stor"] },
     { id:"leje", label:"Husleje", scene:"De betaler husleje.", wh:["Hvor meget"] }
+  ]},
+  D: { label: "D: Skole", person: "Karla går i skole", cards: [
+    { id:"sted", label:"Sted/by", scene:"Karla går i skole i en by.", wh:["Hvor"] },
+    { id:"tid", label:"Dage/tid", scene:"Karla møder i skole på bestemte tider.", wh:["Hvornår"] },
+    { id:"elev", label:"Elever", scene:"Der er mange elever i klassen.", wh:["Hvor mange"] },
+    { id:"laer", label:"Lærer", scene:"Karla har en god lærer.", wh:["Hvem"] }
   ]}
 };
 
@@ -51,38 +57,39 @@ function DanskApp() {
   const checkWithAI = async () => {
     const text = (inputs[key] || "").trim();
     if (!text) return;
+    
+    if (!API_KEY) {
+      setFeedback({ score: "fejl", simple: "Помилка: API ключ не знайдено у Vercel Settings." });
+      return;
+    }
 
     setLoading(true);
-    setFeedback({ score: "load", simple: "AI tjekker din dansk..." });
-
-    const prompt = `Du er en dansklærer. En elev øver sig til DU2 Modul 1. 
-    Situation: ${c.scene}
-    Elevens spørgsmål: "${text}"
-    Tjek om spørgsmålet er korrekt dansk, om der er korrekt inversion (ordstilling). 
-    Svar kort на dansk. Hvis der er fejl, så forklar hvorfor og giv den korrekte version.`;
+    setFeedback({ score: "load", simple: "AI tjekker din dansk... 🤖" });
 
     try {
-      // КРИТИЧНЕ ОНОВЛЕННЯ: Використовуємо v1beta та модель Gemini 3 Flash Preview
-      const model = "gemini-3-flash-preview";
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${API_KEY}`;
+      // Використовуємо v1beta та стабільну модель Gemini 1.5 Flash
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
       
       const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: `Ти вчитель данської мови. Ситуація: ${c.scene}. Учень написав запитання: "${text}". Перевір, чи воно граматично правильне (особливо інверсія). Відповідай коротко данською.` }] }]
+        })
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        setFeedback({ score: "fejl", simple: `Помилка: ${errorData.error.message}` });
+      const data = await response.json();
+
+      if (data.error) {
+        setFeedback({ score: "fejl", simple: `API помилка: ${data.error.message}` });
+      } else if (data.candidates && data.candidates[0].content) {
+        const aiResponse = data.candidates[0].content.parts[0].text;
+        setFeedback({ score: "god", simple: aiResponse });
       } else {
-        const data = await response.json();
-        // Правильний шлях до тексту у відповіді API
-        const aiText = data.candidates[0].content.parts[0].text;
-        setFeedback({ score: "god", simple: aiText });
+        setFeedback({ score: "fejl", simple: "ШІ не зміг проаналізувати речення." });
       }
     } catch (e) {
-      setFeedback({ score: "fejl", simple: "Помилка мережі. Перевірте з'єднання." });
+      setFeedback({ score: "fejl", simple: "Не вдалося з'єднатися з сервером. Перевір інтернет." });
     }
     setLoading(false);
   };
@@ -100,8 +107,8 @@ function DanskApp() {
         ))}
       </div>
 
-      <div className="bg-white p-6 rounded-2xl shadow-lg border">
-        <div className="text-sm text-gray-400 mb-1 uppercase font-bold tracking-tight">{t.person}</div>
+      <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
+        <div className="text-sm text-gray-400 mb-1 uppercase font-bold">{t.person}</div>
         <div className="text-lg font-bold text-gray-800 mb-4">{c.label}</div>
         
         <div className="bg-blue-50 p-4 rounded-xl mb-6 italic text-gray-700 border-l-4 border-blue-400">
@@ -112,7 +119,7 @@ function DanskApp() {
           className="w-full h-24 p-4 border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-blue-400"
           value={inputs[key] || ""} 
           onChange={e => setInputs({...inputs, [key]: e.target.value})}
-          placeholder="Skriv dit spørgsmål her..."
+          placeholder="Skriv dit spørgsmål..."
         />
 
         <button onClick={checkWithAI} disabled={loading}
@@ -121,7 +128,7 @@ function DanskApp() {
         </button>
 
         {feedback && (
-          <div className={`mt-4 p-4 rounded-xl border ${feedback.score === 'fejl' ? 'bg-red-50 border-red-100 text-red-700' : 'bg-green-50 border-green-100 text-green-800'}`}>
+          <div className={`mt-4 p-4 rounded-xl border ${feedback.score === 'fejl' ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-800'}`}>
             <div className="text-sm leading-relaxed whitespace-pre-wrap font-medium">{feedback.simple}</div>
           </div>
         )}
