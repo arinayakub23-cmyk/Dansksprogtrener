@@ -64,11 +64,25 @@ textarea{font-family:inherit;resize:none;outline:none}
 <div class="prow"><span id="plbl"></span><span id="pcnt"></span></div>
 <div class="pbar"><div class="pfill" id="pfill" style="width:0%"></div></div>
 <div class="dots" id="dots"></div>
-<div class="card" id="card">
+<div class="card">
 <div class="chead"><div class="cnum" id="cnum"></div><div class="ctit" id="ctit"></div></div>
 <div class="cbody">
 <div class="scene"><div class="slbl">Situation</div><div class="stxt" id="stxt"></div></div>
-<div class​​​​​​​​​​​​​​​​
+<div class="clbl">Hv-ord som hjælp:</div>
+<div class="chips" id="chips"></div>
+<textarea id="qi" rows="2" placeholder="Skriv dit spørgsmål på dansk…"></textarea>
+<button id="cbtn" onclick="doCheck()"><span id="btxt">Tjek spørgsmål ✓</span></button>
+<div id="fb"></div>
+<button id="extog" onclick="doEx()">▼ Vis eksempler</button>
+<div id="exbox"></div>
+</div>
+</div>
+<div class="navrow">
+<button class="nb" id="pb" onclick="goPrev()">← Forrige</button>
+<button class="nb nx" id="nb2" onclick="goNext()">Næste →</button>
+</div>
+</div>
+</div>
 <script>
 var T={
 A:{icon:"👨‍🍳",label:"A: Arbejde",person:"Nanna er kok",cards:[
@@ -118,7 +132,9 @@ F:{icon:"🦁",label:"F: Fritid (zoo)",person:"Mille er i Zoologisk Have",cards:
 {label:"Aktiviteter",scene:"Der er aktiviteter og dyr i den zoologiske have.",wh:["Hvad"],hint:["Hvad laver hun?"],ex:["Hvad laver hun i zoo?"]},
 {label:"Mad/drikke",scene:"Mille spiser og drikker noget i zoo.",wh:["Hvad"],hint:["Hvad spiser hun?"],ex:["Hvad spiser hun?"]},
 {label:"Pris",scene:"Det koster penge at komme ind i zoo.",wh:["Hvad koster","Hvor meget"],hint:["Hvad koster det?"],ex:["Hvad koster det?"]}
-]}var FB={god:{bg:"#d1fae5",fg:"#065f46",br:"#6ee7b7"},ok:{bg:"#fef3c7",fg:"#78350f",br:"#fcd34d"},fejl:{bg:"#fee2e2",fg:"#7f1d1d",br:"#fca5a5"},load:{bg:"#f3f4f6",fg:"#6b7280",br:"#e5e7eb"}};
+]}
+};
+var FB={god:{bg:"#d1fae5",fg:"#065f46",br:"#6ee7b7"},ok:{bg:"#fef3c7",fg:"#78350f",br:"#fcd34d"},fejl:{bg:"#fee2e2",fg:"#7f1d1d",br:"#fca5a5"},load:{bg:"#f3f4f6",fg:"#6b7280",br:"#e5e7eb"}};
 var tg=window.Telegram&&window.Telegram.WebApp;
 var cT="A",cC=0,ans={},inp={},exOpen=false;
 if(tg){tg.ready();tg.expand();}
@@ -161,11 +177,11 @@ if(!val){showFB({score:"fejl",simple:"Skriv venligst et spørgsmål først."});r
 btn.disabled=true;
 btxt.innerHTML='<span class="spin"></span> Tjekker…';
 showFB({score:"load",simple:"AI tjekker dit spørgsmål…"});
-var prompt='Du er dansklærer. Eleven øver modultest.dk A1-A2.\nSituation: "'+c.scene+'"\nTema: "'+c.label+'"\nSpørgsmål: "'+val+'"\nSvar KUN JSON uden markdown:\n{"score":"god","relevant":true,"grammatik":"1 sætning om grammatik","fejl":"fejl eller tom streng","forbedring":"korrekt version","ros":"ros eller tom streng"}\nscore god = korrekt dansk + spørgsmålstegn + rigtig ordstilling (hv-ord+verbum+subjekt)\nscore ok = forståeligt men har fejl\nscore fejl = forkert grammatik/ordstilling/mangler spørgsmålstegn/ikke dansk/ikke relevant';
+var prompt='Du er dansklærer. Eleven øver modultest.dk A1-A2.\nSituation: "'+c.scene+'"\nTema: "'+c.label+'"\nSpørgsmål: "'+val+'"\nSvar KUN JSON uden markdown:\n{"score":"god","relevant":true,"grammatik":"1 sætning om grammatik","fejl":"fejl eller tom streng","forbedring":"korrekt version","ros":"ros eller tom streng"}\nscore god = korrekt dansk + spørgsmålstegn + rigtig ordstilling\nscore ok = forståeligt men har fejl\nscore fejl = forkert grammatik/mangler spørgsmålstegn/ikke relevant';
 try{
-var res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:400,messages:[{role:"user",content:prompt}]})});
+var res=await fetch("/api/check",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({prompt:prompt})});
 var data=await res.json();
-var raw=data.content.map(function(i){return i.text||"";}).join("");
+var raw=data.text||"";
 var j=JSON.parse(raw.replace(/```json|```/g,"").trim());
 ans[k]=j.score;dc();showFB(j);
 if(tg&&tg.HapticFeedback){if(j.score==="god")tg.HapticFeedback.notificationOccurred("success");else if(j.score==="fejl")tg.HapticFeedback.notificationOccurred("error");else tg.HapticFeedback.notificationOccurred("warning");}
@@ -186,5 +202,3 @@ dc();
 </script>
 </body>
 </html>
-
-};
