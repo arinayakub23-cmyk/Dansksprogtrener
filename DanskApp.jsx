@@ -1,8 +1,5 @@
 const { useState, useEffect } = React;
 
-// Це фікс для білого екрана: створюємо безпечну змінну
-// Якщо ви використовуєте звичайний HTML/JS, process.env не існує,
-// тому ми додаємо перевірку, щоб код не "падав".
 const getApiKey = () => {
   try {
     return process.env.REACT_APP_GEMINI_KEY || "NO_KEY";
